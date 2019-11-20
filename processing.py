@@ -71,8 +71,6 @@ class PimaProcessing:
         self.mean_one = np.mean(tmp_one[:3])
         self.var_zero = np.var(tmp_zero[:3])
         self.var_one = np.var(tmp_one[:3])
-        self.cov_zero = np.cov(tmp_one[:3])
-        self.cov_one = np.cov(tmp_zero[:3])
 
         # Errors might occur
         [rows, self.prior_zero_length] = tmp_zero.shape
