@@ -40,12 +40,12 @@ class PimaProcessing:
         self.var = np.asarray(self.var)
         self.params = np.array(self.pregnant_times, self.blood_pressure, self.age)
         self.standarilization()
-        self.params = np.append()
+        self.params = np.append(self.var)
 
     def standarilization(self) -> None:
         scaler = StandardScaler()
         scaler.fit(self.params)
-        print("mean: ", scaler.mean_)
+        print ("mean: ", scaler.mean_)
         scaler.transform(self.params)
 
     '''
@@ -58,7 +58,9 @@ class PimaProcessing:
             x_train, x_test, y_train, y_test = train_test_split(self.params, test_size=0.5)
         if seed is not 0:
             x_train, x_test, y_train, y_test = train_test_split(self.params, test_size=0.5, random_state=seed)
-        return np.array(x_train), np.array(x_test)
+        self.train_data = np.array(x_train)
+        self.test_data = np.array(x_test)
+        return self.train_data, self.test_data
 
     def precessing(self):
         tmp = self.params
