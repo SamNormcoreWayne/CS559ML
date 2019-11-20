@@ -9,8 +9,8 @@ from matplotlib import cm
 
 class PimaProcessing:
     COL_NUM: int = lambda: 9
-    path: str = os.path.abspath()
-    fp: str = lambda: os.path.join(PimaProcessing.path, "data", "pima-indians-diabetes-clean.csv")
+    path: str = os.path.dirname(os.path.realpath(__file__))
+    fp: str = os.path.join(path, "data", "pima-indians-diabetes-clean.csv")
 
     def __init__(self):
         self.pregnant_times = list()
@@ -29,23 +29,29 @@ class PimaProcessing:
         with open(PimaProcessing.fp) as data_file:
             reader = csv.reader(data_file)
             for row in reader:
-                self.pregnant_times.append(row[0])
-                self.blood_pressure.append(row[2])
-                self.age.append(row[7])
+                self.pregnant_times.append(int(row[0]))
+                self.blood_pressure.append(int(row[2]))
+                self.age.append(int(row[7]))
+                self.var.append(int(row[8]))
 
     def list_to_array(self) -> None:
         self.pregnant_times = np.asarray(self.pregnant_times)
         self.blood_pressure = np.asarray(self.blood_pressure)
         self.age = np.asarray(self.age)
         self.var = np.asarray(self.var)
-        self.params = np.array(self.pregnant_times, self.blood_pressure, self.age)
+        self.params = np.array([self.pregnant_times, self.blood_pressure, self.age])
+        # print(self.params)
+        # print("shape: {}".format(self.params.shape))
         self.standarilization()
-        self.params = np.append(self.var)
+        # print("shape: {}".format(self.params.shape))
+        # print(self.var.shape)
+        self.params = np.append(self.params, [self.var], axis=0)
+        # print("shape: {}".format(self.params.shape))
 
     def standarilization(self) -> None:
         scaler = StandardScaler()
         scaler.fit(self.params)
-        print ("mean: ", scaler.mean_)
+        # print ("mean: ", scaler.mean_)
         scaler.transform(self.params)
 
     '''
@@ -55,24 +61,19 @@ class PimaProcessing:
 
     def data_split(self, seed : int = 0) -> tuple:
         if seed is 0:
-            x_train, x_test, y_train, y_test = train_test_split(self.params, test_size=0.5)
+            x_train, x_test = train_test_split(np.transpose(self.params), test_size=0.5)
         if seed is not 0:
-            x_train, x_test, y_train, y_test = train_test_split(self.params, test_size=0.5, random_state=seed)
-        self.train_data = np.array(x_train)
-        self.test_data = np.array(x_test)
+            x_train, x_test = train_test_split(np.transpose(self.params), test_size=0.5, random_state=seed)
+        self.train_data = np.transpose(x_train)
+        self.test_data = np.transpose(x_test)
+        print("train_data_shape: {}".format(self.train_data.shape))
         return self.train_data, self.test_data
 
     def precessing(self):
-        tmp = self.params
+        tmp = self.train_data
         tmp_zero = PimaProcessing.get_zero_in_var(tmp)
         tmp_one = PimaProcessing.get_one_in_var(tmp)
         # split data into var == 0 and var == 1
-
-        # Add instance variables here. Errors might ouccr
-        self.mean_zero = np.mean(tmp_zero[:3])
-        self.mean_one = np.mean(tmp_one[:3])
-        self.var_zero = np.var(tmp_zero[:3])
-        self.var_one = np.var(tmp_one[:3])
 
         # Errors might occur
         [rows, self.prior_zero_length] = tmp_zero.shape
@@ -81,11 +82,14 @@ class PimaProcessing:
     @staticmethod
     def get_zero_in_var(data : np.ndarray) -> np.ndarray :
         tmp = df(data)
+        #print("data: {}".format(data))
         tmp = tmp.loc[:, ~(tmp.iloc[3, :] == 1)]
+        print("delete one:", tmp)
         return np.array(tmp)
 
     @staticmethod
     def get_one_in_var(data: np.ndarray) -> np.ndarray :
         tmp = df(data)
         tmp = tmp.loc[:, ~(tmp.iloc[3, :] == 0)]
+        # print(tmp)
         return np.array(tmp)
