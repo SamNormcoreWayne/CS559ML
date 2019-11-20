@@ -3,15 +3,12 @@ class Training:
     mean_zero = 0.0
     var_one = 0.0
     var_zero = 0.0
-    def __init__(self, mean_one, mean_zero, var_one, var_zero, length_one, length_zero):
-        Training.mean_one = mean_one
-        Training.mean_zero = mean_zero
-        Training.var_one = var_one
-        Training.var_zero = var_zero
+    def __init__(self, data, length_one, length_zero):
         self.length_one = length_one
         self.length_zero = length_zero
         self.prior_zero = 0.0
         self.prior_one = 0.0
+        self.data = data
 
     def do_training(self):
         data_size = self.length_one + self.length_zero
