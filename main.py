@@ -35,12 +35,13 @@ def main():
     '''
     knn = list()
     train_data, test_data = process.data_split()
-    k1 = KNeighborsClassifier(1)
-    k1.fit(np.transpose(train_data[:3]), train_data[3])
-    knn.append(k1.score(test_data[:3], test_data[3]))
-    print("Question 3: knn: ", knn)
-
-
+    for i in [1, 5 ,11]:
+        k1 = KNeighborsClassifier(i)
+        # print("Shape: ", np.transpose(train_data[:3]).shape, train_data[3].shape)
+        k1.fit(np.transpose(train_data[:3]), train_data[3])
+        knn.append(k1.score(np.transpose(test_data[:3]), test_data[3]))
+    knn = np.array(knn)
+    print("Question 3: mean accuracy: {}, standard var: {}".format(np.mean(knn), np.sqrt(np.var(knn))))
 
 if __name__ == "__main__":
     main()

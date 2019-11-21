@@ -4,7 +4,6 @@ import numpy as np
 from pandas import DataFrame as df
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from matplotlib import cm
 
 
 class PimaProcessing:
