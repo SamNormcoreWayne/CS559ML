@@ -52,7 +52,10 @@ class PimaProcessing:
         scaler = StandardScaler()
         scaler.fit(self.params)
         # print ("mean: ", scaler.mean_)
-        scaler.transform(self.params)
+        self.params = scaler.transform(self.params)
+        # print("self: ", self.params)
+        # print ("mean: ", scaler.mean_)
+        # print("var: ", scaler.var_)
 
     '''
     def visualization(self):
@@ -66,7 +69,7 @@ class PimaProcessing:
             x_train, x_test = train_test_split(np.transpose(self.params), test_size=0.5, random_state=seed)
         self.train_data = np.transpose(x_train)
         self.test_data = np.transpose(x_test)
-        print("train_data_shape: {}".format(self.train_data.shape))
+        # print("train_data_shape: {}".format(self.train_data.shape))
         return self.train_data, self.test_data
 
     def precessing(self):
@@ -82,9 +85,9 @@ class PimaProcessing:
     @staticmethod
     def get_zero_in_var(data : np.ndarray) -> np.ndarray :
         tmp = df(data)
-        #print("data: {}".format(data))
+        # print("data: {}".format(data))
         tmp = tmp.loc[:, ~(tmp.iloc[3, :] == 1)]
-        print("delete one:", tmp)
+        # print("delete one:", tmp)
         return np.array(tmp)
 
     @staticmethod

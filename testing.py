@@ -10,32 +10,43 @@ class Testing:
         self.wrong = 0
         self.accuracy = list()
 
-    def gaussian(self, data):
-        cov = np.cov(data)
-        print("datashape: ", data.shape)
-        print("covshape: ", cov.shape)
+    def gaussian(self, cov, mean, vec):
+        # print("covshape: ", cov)
+        # print("det: ", np.linalg.det(cov))
         inverse_cov = np.linalg.inv(cov)
-        tmp = dot(dot(data, inverse_cov), np.transpose(data))
-        print("tmpshape: ", tmp.shape)
+        # print("inverse: ", inverse_cov)
+        tmp = dot(dot(vec - mean, inverse_cov), np.transpose(vec - mean))
+        # print("tmpshape: ", tmp)
         return np.exp(np.negative(tmp) // 2)
 
     def get_ans(self, prior_one, prior_zero):
         test_zero = PimaProcessing.get_zero_in_var(self.data)[:3]
         test_one = PimaProcessing.get_one_in_var(self.data)[:3]
         # print("test:one: ", test_one)
-        self.lklhood_zero = self.gaussian(test_zero)
-        self.lklhood_one = self.gaussian(test_one)
-        print("lklhood: ", self.lklhood_one)
-        lklhood_one = self.lklhood_one
-        lklhood_zero = self.lklhood_zero
+        test_zero = np.transpose(test_zero[:3])
+        test_one = np.transpose(test_one[:3])
+        cov_one = np.cov(np.transpose(test_one))
+        cov_zero = np.cov(np.transpose(test_zero))
+        mean_one = np.mean(test_one, axis=0)
+        # print("meanone: ", mean_one)
+        # print("var: ", np.var(test_one, axis=0))
+        # print("covshape: ", cov_one.shape)
+        # print("covshape: ", cov_zero.shape)
+        mean_zero = np.mean(test_zero)
+        test_data = np.transpose(self.data[:3])
+        # print("test_zeroshape: ", test_zero.shape)
+        # print("cov:", cov_one, cov_zero)
 
-        for i in range(lklhood_one.size):
+        for i in range(test_data.shape[0]):
             tmp_prior_one = prior_one
             tmp_prior_zero = prior_zero
-            
-            post_one = lklhood_one[i] * tmp_prior_one
-            post_zero = lklhood_zero[i] * tmp_prior_zero
+            lklhood_one = self.gaussian(cov_one, mean_one, test_data[i])
+            lklhood_zero = self.gaussian(cov_zero, mean_zero, test_data[i])
 
+            # print("lklhood shape:", lklhood_one)
+            post_one = lklhood_one * tmp_prior_one
+            post_zero = lklhood_zero * tmp_prior_zero
+            # print(tmp_prior_one)
             # print(post_one, post_zero)
             if (post_one > post_zero) and (self.data[i, 3] is 0):
                 self.correct + 1

@@ -14,7 +14,7 @@ def main():
     test = Testing(test_data)
     train.do_training()
     prior_one = train.prior_one
-    # print("prior_one: {}".format(prior_one))
+    print("prior_one: {}".format(prior_one))
     prior_zero = train.prior_zero   
     for i in range(round):
         post_one, post_zero = test.get_ans(prior_one, prior_zero)
