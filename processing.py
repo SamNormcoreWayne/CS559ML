@@ -25,7 +25,6 @@ class PimaProcessing:
         self.age = list()
         self.var = list()
         self.params = np.array(0)
-        self.open_file_and_store_pca()
 
     def open_file_and_store(self) -> None:
         with open(PimaProcessing.fp) as data_file:
@@ -36,6 +35,11 @@ class PimaProcessing:
                 self.age.append(int(row[7]))
                 self.var.append(int(row[8]))
 
+    def open_file_and_store_general(self) -> None:
+        with open(PimaProcessing.fp) as data_file:
+            data = pd.read_csv(data_file, delimiter=',')
+            self.params = data
+
     def open_file_and_store_pca(self) -> None:
         with open(PimaProcessing.fp) as data_file:
             data = pd.read_csv(data_file, delimiter=',')
@@ -43,7 +47,7 @@ class PimaProcessing:
             data = data.iloc[:, :-1]
             pca = PCA(n_components=3)
             pca.fit(data)
-            data = pca.transform(data)
+            self.params = pd.concat([pca.transform(data), class_data], axis=1)
 
     def list_to_array(self) -> None:
         self.pregnant_times = np.asarray(self.pregnant_times)
