@@ -1,9 +1,11 @@
 import csv
 import os
 import numpy as np
+import pandas as pd
 from pandas import DataFrame as df
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
+from sklearn.decomposition import PCA
 from matplotlib import cm
 
 
@@ -23,7 +25,7 @@ class PimaProcessing:
         self.age = list()
         self.var = list()
         self.params = np.array(0)
-        self.open_file_and_store()
+        self.open_file_and_store_pca()
 
     def open_file_and_store(self) -> None:
         with open(PimaProcessing.fp) as data_file:
@@ -33,6 +35,15 @@ class PimaProcessing:
                 self.blood_pressure.append(int(row[2]))
                 self.age.append(int(row[7]))
                 self.var.append(int(row[8]))
+
+    def open_file_and_store_pca(self) -> None:
+        with open(PimaProcessing.fp) as data_file:
+            data = pd.read_csv(data_file, delimiter=',')
+            class_data = data.iloc[:, -1:]
+            data = data.iloc[:, :-1]
+            pca = PCA(n_components=3)
+            pca.fit(data)
+            data = pca.transform(data)
 
     def list_to_array(self) -> None:
         self.pregnant_times = np.asarray(self.pregnant_times)
